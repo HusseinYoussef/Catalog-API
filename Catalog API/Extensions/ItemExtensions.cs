@@ -6,7 +6,7 @@ namespace Catalog_API.Extensions
 {
     public static class ItemExtensions
     {
-        public static ItemReadDto ItemToDto(this Item item)
+        public static ItemReadDto AsDto(this Item item)
         {
             return new ItemReadDto()
             {
