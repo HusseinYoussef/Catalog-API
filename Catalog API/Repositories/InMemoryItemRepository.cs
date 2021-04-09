@@ -7,7 +7,7 @@ namespace Catalog_API.Repositories
 {
     public class InMemoryItemRepository : IItemRepository
     {
-        private readonly List<Item> _items;
+        private List<Item> _items;
 
         public InMemoryItemRepository()
         {
@@ -19,6 +19,17 @@ namespace Catalog_API.Repositories
             };
         }
 
+        public void CreateItem(Item item)
+        {
+            _items.Add(item);
+        }
+
+        public void DeleteItem(Guid id)
+        {
+            int idx = _items.FindIndex(i => i.Id == id);
+            _items.RemoveAt(idx);
+        }
+
         public Item GetItem(Guid id)
         {
             Item item = _items.Where(i => i.Id == id).FirstOrDefault();
@@ -28,6 +39,12 @@ namespace Catalog_API.Repositories
         public IEnumerable<Item> GetItems()
         {
             return _items;
+        }
+
+        public void UpdateItem(Item item)
+        {
+            int idx = _items.FindIndex(i => i.Id == item.Id);
+            _items[idx] = item;
         }
     }
 }
