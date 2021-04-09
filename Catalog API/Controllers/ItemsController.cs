@@ -23,7 +23,7 @@ namespace Catalog_API.Controllers
         [HttpGet]
         public IActionResult GetItems()
         {
-            IEnumerable<ItemReadDto> items = _itemRepository.GetItems().Select(i => i.ItemToDto());
+            IEnumerable<ItemReadDto> items = _itemRepository.GetItems().Select(i => i.AsDto());
 
             if (items.Count() == 0)
             {
@@ -40,7 +40,53 @@ namespace Catalog_API.Controllers
             {
                 return NotFound();
             }
-            return Ok(item.ItemToDto());
+            return Ok(item.AsDto());
+        }
+
+        [HttpPost]
+        public IActionResult CreateItem(ItemCreateDto itemDto)
+        {
+            Item item = new Item()
+            {
+                Id = Guid.NewGuid(),
+                Name = itemDto.Name,
+                Price = itemDto.Price,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _itemRepository.CreateItem(item);
+            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item.AsDto());
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateItem(Guid id, ItemUpdateDto itemDto)
+        {
+            Item item = _itemRepository.GetItem(id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            item.Name = itemDto.Name;
+            item.Price = itemDto.Price;
+            item.UpdatedAt = DateTime.UtcNow;
+
+            _itemRepository.UpdateItem(item);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteItem(Guid id)
+        {
+            Item item = _itemRepository.GetItem(id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            _itemRepository.DeleteItem(id);
+            return NoContent();
         }
     }
 }
