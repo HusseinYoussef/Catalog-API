@@ -9,6 +9,6 @@ namespace Catalog_API.Dtos
         public string Name { get; set; }
         [Required]
         [Range(1, 1000)]
-        public decimal Price { get; set; } 
+        public decimal? Price { get; set; } 
     }
 }

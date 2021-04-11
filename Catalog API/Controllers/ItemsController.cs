@@ -50,7 +50,7 @@ namespace Catalog_API.Controllers
             {
                 Id = Guid.NewGuid(),
                 Name = itemDto.Name,
-                Price = itemDto.Price,
+                Price = itemDto.Price??0,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -69,7 +69,7 @@ namespace Catalog_API.Controllers
             }
 
             item.Name = itemDto.Name;
-            item.Price = itemDto.Price;
+            item.Price = itemDto.Price??0;
             item.UpdatedAt = DateTime.UtcNow;
 
             _itemRepository.UpdateItem(item);
