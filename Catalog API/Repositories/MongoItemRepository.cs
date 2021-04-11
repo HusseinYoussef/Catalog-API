@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Catalog_API.Models;
 using Catalog_API.Settings;
 using Microsoft.Extensions.Options;
@@ -18,29 +19,29 @@ namespace Catalog_API.Repositories
             IMongoDatabase mongoDatabase = mongoClint.GetDatabase(settings.Value.DatabaseName);
             itemCollection = mongoDatabase.GetCollection<Item>(settings.Value.CollectionName);
         }
-        public void CreateItem(Item item)
+        public async Task CreateItemAsync(Item item)
         {
-            itemCollection.InsertOne(item);
+            await itemCollection.InsertOneAsync(item);
         }
 
-        public void DeleteItem(Guid id)
+        public async Task DeleteItemAsync(Guid id)
         {
-            itemCollection.DeleteOne(i => i.Id == id);
+            await itemCollection.DeleteOneAsync(i => i.Id == id);
         }
 
-        public Item GetItem(Guid id)
+        public async Task<Item> GetItemAsync(Guid id)
         {
-            return itemCollection.Find(i => i.Id == id).FirstOrDefault();
+            return await itemCollection.Find(i => i.Id == id).FirstOrDefaultAsync();
         }
 
-        public IEnumerable<Item> GetItems()
+        public async Task<IEnumerable<Item>> GetItemsAsync()
         {
-            return itemCollection.Find(i => true).ToList();
+            return await itemCollection.Find(i => true).ToListAsync();
         }
 
-        public void UpdateItem(Item item)
+        public async Task UpdateItemAsync(Item item)
         {
-            itemCollection.ReplaceOne(i => i.Id == item.Id, item);
+            await itemCollection.ReplaceOneAsync(i => i.Id == item.Id, item);
         }
     }
 }
