@@ -29,7 +29,7 @@ namespace Catalog_API
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MongoDbSettings>(_config.GetSection(nameof(MongoDbSettings)));
-            services.AddSingleton<IItemRepository, InMemoryItemRepository>();
+            services.AddScoped<IItemRepository, MongoItemRepository>();
             services.AddControllers();
             services.AddSwaggerGen(c => 
             {
