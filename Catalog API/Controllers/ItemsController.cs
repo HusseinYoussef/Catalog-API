@@ -6,6 +6,7 @@ using Catalog_API.Dtos;
 using Catalog_API.Extensions;
 using Catalog_API.Models;
 using Catalog_API.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog_API.Controllers
@@ -22,6 +23,8 @@ namespace Catalog_API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetItems()
         {
             IEnumerable<ItemReadDto> items = (await _itemRepository.GetItemsAsync()).Select(i => i.AsDto());
@@ -34,6 +37,8 @@ namespace Catalog_API.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetItem(Guid id)
         {
             Item item = await _itemRepository.GetItemAsync(id);
@@ -45,6 +50,7 @@ namespace Catalog_API.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> CreateItem(ItemCreateDto itemDto)
         {
             Item item = new Item()
@@ -61,6 +67,8 @@ namespace Catalog_API.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateItem(Guid id, ItemUpdateDto itemDto)
         {
             Item item = await _itemRepository.GetItemAsync(id);
@@ -78,6 +86,8 @@ namespace Catalog_API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteItem(Guid id)
         {
             Item item = await _itemRepository.GetItemAsync(id);
