@@ -25,9 +25,9 @@ namespace Catalog_API.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetItems()
+        public async Task<ActionResult<IEnumerable<ItemReadDto>>> GetItems()
         {
-            IEnumerable<ItemReadDto> items = (await _itemRepository.GetItemsAsync()).Select(i => i.AsDto());
+            IEnumerable<ItemReadDto> items = (await _itemRepository.GetItemsAsync()).Select(i => i.AsDto()).ToList();
 
             if (items.Count() == 0)
             {
@@ -39,7 +39,7 @@ namespace Catalog_API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetItem(Guid id)
+        public async Task<ActionResult<ItemReadDto>> GetItem(Guid id)
         {
             Item item = await _itemRepository.GetItemAsync(id);
             if (item == null)
@@ -51,7 +51,7 @@ namespace Catalog_API.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<IActionResult> CreateItem(ItemCreateDto itemDto)
+        public async Task<ActionResult<ItemReadDto>> CreateItem(ItemCreateDto itemDto)
         {
             Item item = new Item()
             {
