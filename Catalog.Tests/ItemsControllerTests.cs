@@ -177,6 +177,29 @@ namespace Catalog.Tests
             result.Should().BeOfType<NoContentResult>();
         }
 
+        [Fact]
+        public async Task GetItems_WithMatchingItems_ReturnsMatchingItems()
+        {
+            // Arrange
+            var items = new[]{
+                new Item() {Name = "Potion"},
+                new Item() {Name = "Energy"},
+                new Item() {Name = "Mega-Potion"}
+             };
+            var query = "potion";
+
+            itemRepositoryStub.Setup(repo => repo.GetItemsAsync(query))
+                            .ReturnsAsync(new[]{items[0], items[2]});
+            var controller = new ItemsController(itemRepositoryStub.Object);
+
+            // Act
+            var result = await controller.GetItems(query);
+
+            // Assert
+            var returnedItems = (result.Result as OkObjectResult).Value as IEnumerable<ItemReadDto>;
+            returnedItems.Should().OnlyContain(i => i.Name.ToLower().Contains(query.ToLower()));
+        }
+
         private Item CreateRandomItem()
         {
             return new Item()
