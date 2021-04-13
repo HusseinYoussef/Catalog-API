@@ -55,7 +55,7 @@ namespace Catalog.Tests
         {
             // Arrange
             var expectedItems = new[] { CreateRandomItem(), CreateRandomItem(), CreateRandomItem() };
-            itemRepositoryStub.Setup(repo => repo.GetItemsAsync())
+            itemRepositoryStub.Setup(repo => repo.GetItemsAsync(It.IsAny<String>()))
                             .ReturnsAsync(expectedItems);
             var controller = new ItemsController(itemRepositoryStub.Object);
 
@@ -73,7 +73,7 @@ namespace Catalog.Tests
         {
             // Arrange
             var expectedItems = new List<Item>();
-            itemRepositoryStub.Setup(repo => repo.GetItemsAsync())
+            itemRepositoryStub.Setup(repo => repo.GetItemsAsync(It.IsAny<String>()))
                             .ReturnsAsync(expectedItems);
             var controller = new ItemsController(itemRepositoryStub.Object);
 
