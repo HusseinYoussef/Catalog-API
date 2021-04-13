@@ -25,9 +25,9 @@ namespace Catalog_API.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<ItemReadDto>>> GetItems()
+        public async Task<ActionResult<IEnumerable<ItemReadDto>>> GetItems(string query=null)
         {
-            IEnumerable<ItemReadDto> items = (await _itemRepository.GetItemsAsync()).Select(i => i.AsDto()).ToList();
+            IEnumerable<ItemReadDto> items = (await _itemRepository.GetItemsAsync(query)).Select(i => i.AsDto()).ToList();
 
             if (items.Count() == 0)
             {
