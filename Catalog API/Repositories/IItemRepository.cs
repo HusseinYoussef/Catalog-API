@@ -7,7 +7,7 @@ namespace Catalog_API.Repositories
 {
     public interface IItemRepository
     {
-        Task<IEnumerable<Item>> GetItemsAsync();
+        Task<IEnumerable<Item>> GetItemsAsync(string query=null);
         Task<Item> GetItemAsync(Guid id);
         Task CreateItemAsync(Item item);
         Task UpdateItemAsync(Item item);

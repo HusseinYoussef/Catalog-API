@@ -39,8 +39,12 @@ namespace Catalog_API.Repositories
             return await Task.FromResult(item);
         }
 
-        public async Task<IEnumerable<Item>> GetItemsAsync()
+        public async Task<IEnumerable<Item>> GetItemsAsync(string query)
         {
+            if (!String.IsNullOrEmpty(query))
+            { 
+                return await Task.FromResult(_items.Where(i => i.Name.ToLower().Contains(query.ToLower())));
+            }
             return await Task.FromResult(_items);
         }
 
