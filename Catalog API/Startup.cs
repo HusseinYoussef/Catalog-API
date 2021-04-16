@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using System.Text.Json;
 using Catalog_API.Repositories;
 using Catalog_API.Settings;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace Catalog_API
@@ -29,9 +31,22 @@ namespace Catalog_API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<JwtSettings>(_config.GetSection(nameof(JwtSettings)));
             services.Configure<MongoDbSettings>(_config.GetSection(nameof(MongoDbSettings)));
             services.AddScoped<IItemRepository, MongoItemRepository>();
             services.AddControllers();
+            services.AddAuthentication("OAuth")
+                    .AddJwtBearer("OAuth", config =>
+                    {
+                        var jwtSettings = _config.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key));
+                        config.TokenValidationParameters = new TokenValidationParameters()
+                        {
+                            ValidIssuer = jwtSettings.Issuer,
+                            ValidAudience = jwtSettings.Audience,
+                            IssuerSigningKey = key
+                        };
+                    });
             var settings = _config.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
             services.AddHealthChecks()
                     .AddMongoDb(
@@ -69,6 +84,9 @@ namespace Catalog_API
             }
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
