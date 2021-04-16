@@ -6,6 +6,7 @@ using Catalog_API.Dtos;
 using Catalog_API.Extensions;
 using Catalog_API.Models;
 using Catalog_API.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,6 +50,7 @@ namespace Catalog_API.Controllers
             return Ok(item.AsDto());
         }
 
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<ItemReadDto>> CreateItem(ItemCreateDto itemDto)
@@ -66,6 +68,7 @@ namespace Catalog_API.Controllers
             return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item.AsDto());
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -85,6 +88,7 @@ namespace Catalog_API.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
