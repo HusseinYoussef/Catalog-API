@@ -20,6 +20,7 @@ namespace Catalog_API.Controllers
         }
 
         [Route("auth")]
+        [HttpGet]
         public IActionResult Authenticate()
         {
             var claims = new[]{
