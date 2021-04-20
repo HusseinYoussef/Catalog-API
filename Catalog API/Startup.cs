@@ -41,7 +41,7 @@ namespace Catalog_API
             {
                 options.UseMySql(_config.GetSection(nameof(MysqlDbSettings)).Get<MysqlDbSettings>().ConnectionString);
             });
-            services.AddIdentity<IdentityUser, IdentityRole>(options => options.User.RequireUniqueEmail=true)
+            services.AddIdentityCore<IdentityUser>(options => options.User.RequireUniqueEmail=true)
                     .AddEntityFrameworkStores<UsersDbContext>();
             services.AddAuthentication("OAuth")
                     .AddJwtBearer("OAuth", config =>
