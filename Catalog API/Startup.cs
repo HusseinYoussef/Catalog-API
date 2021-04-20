@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,16 +37,22 @@ namespace Catalog_API
             services.Configure<MongoDbSettings>(_config.GetSection(nameof(MongoDbSettings)));
             services.AddScoped<IItemRepository, MongoItemRepository>();
             services.AddControllers();
+            services.AddDbContextPool<UsersDbContext>(options =>
+            {
+                options.UseMySql(_config.GetSection(nameof(MysqlDbSettings)).Get<MysqlDbSettings>().ConnectionString);
+            });
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.User.RequireUniqueEmail=true)
+                    .AddEntityFrameworkStores<UsersDbContext>();
             services.AddAuthentication("OAuth")
                     .AddJwtBearer("OAuth", config =>
                     {
                         var jwtSettings = _config.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key));
                         config.TokenValidationParameters = new TokenValidationParameters()
                         {
-                            ValidIssuer = jwtSettings.Issuer,
-                            ValidAudience = jwtSettings.Audience,
-                            IssuerSigningKey = key
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateLifetime = true
                         };
                     });
             var settings = _config.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
@@ -63,6 +71,29 @@ namespace Catalog_API
                     Title = "Catalog API",
                     Description = "A simple RESTful Web API",
                 });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()  
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",  
+                });  
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme()
+                        {
+                            Reference = new OpenApiReference  
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }  
+                });  
             });
         }
 
