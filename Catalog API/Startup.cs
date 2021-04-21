@@ -5,6 +5,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using Catalog_API.Repositories;
+using Catalog_API.Services;
 using Catalog_API.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -36,6 +37,7 @@ namespace Catalog_API
             services.Configure<JwtSettings>(_config.GetSection(nameof(JwtSettings)));
             services.Configure<MongoDbSettings>(_config.GetSection(nameof(MongoDbSettings)));
             services.AddScoped<IItemRepository, MongoItemRepository>();
+            services.AddScoped<IIdentityService, IdentityService>();
             services.AddControllers();
             services.AddDbContextPool<UsersDbContext>(options =>
             {
