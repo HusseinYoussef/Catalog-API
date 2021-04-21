@@ -41,7 +41,34 @@ namespace Catalog_API.Services
                     Errors = result.Errors.Select(e => e.Description)
                 };
             }
+            return GenerateToken(newUser);
+        }
 
+        public async Task<AuthenticationResult> LoginAsync(string email, string password)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return new AuthenticationResult()
+                {
+                    Errors = new[] { "User doesn't exist" }
+                };
+            }
+            bool result = await _userManager.CheckPasswordAsync(user, password);
+
+            if (!result)
+            {
+                return new AuthenticationResult()
+                {
+                    Errors = new[] { "Email or Password is Wrong!" }
+                };
+            }
+            return GenerateToken(user);
+        }
+
+        private AuthenticationResult GenerateToken(IdentityUser newUser)
+        { 
             var tokenDescription = new JwtSecurityToken(
                 claims: new[]{
                     new Claim(ClaimTypes.Email, newUser.Email),
