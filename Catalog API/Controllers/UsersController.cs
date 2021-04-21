@@ -42,5 +42,25 @@ namespace Catalog_API.Controllers
                 Token = authResult.Token
             });
         }
+
+        [HttpPost("/login")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Login([FromBody] IdentityCreateDto user)
+        {
+            var loginResult = await _identityService.LoginAsync(user.Email, user.Password);
+
+            if (!loginResult.Success)
+            {
+                return BadRequest(new AuthFailedResponse()
+                {
+                    Errors = loginResult.Errors
+                });
+            }
+            return Ok(new AuthSuccessResponse()
+            {
+                Token = loginResult.Token
+            });
+        }
     }
 }
