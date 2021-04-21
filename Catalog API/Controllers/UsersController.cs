@@ -2,7 +2,11 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using Catalog_API.Dtos;
+using Catalog_API.Services;
 using Catalog_API.Settings;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -12,37 +16,31 @@ namespace Catalog_API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly JwtSettings _jwtSettings;
+        private readonly IIdentityService _identityService;
 
-        public UsersController(IOptions<JwtSettings> jwtSettings)
+        public UsersController(IIdentityService identityService)
         {
-            _jwtSettings = jwtSettings.Value;
+            _identityService = identityService;
         }
 
-        [Route("auth")]
-        [HttpGet]
-        public IActionResult Authenticate()
+        [HttpPost("/register")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Register([FromBody] IdentityCreateDto user)
         {
-            var claims = new[]{
-                new Claim(ClaimTypes.Name, "Catalog User"),
-                new Claim(ClaimTypes.DateOfBirth, "4/16/2021"),
-                new Claim(ClaimTypes.Role, "Normal User")
-            };
+            var authResult = await _identityService.RegisterAsync(user.Email, user.Password);
 
-            var key = Encoding.UTF8.GetBytes(_jwtSettings.Key);
-            var token = new JwtSecurityToken(
-                issuer: _jwtSettings.Issuer,
-                audience: _jwtSettings.Audience,
-                claims: claims,
-                notBefore: DateTime.Now,
-                expires: DateTime.Now.AddHours(2),
-                signingCredentials: new SigningCredentials(
-                    key: new SymmetricSecurityKey(key),
-                    algorithm: SecurityAlgorithms.HmacSha256
-                )
-            );
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-            return Ok(new { success = true, token = jwt });
+            if (!authResult.Success)
+            {
+                return BadRequest(new AuthFailedResponse()
+                {
+                    Errors = authResult.Errors
+                });
+            }
+            return Ok(new AuthSuccessResponse()
+            {
+                Token = authResult.Token
+            });
         }
     }
 }
