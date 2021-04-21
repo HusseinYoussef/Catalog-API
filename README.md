@@ -26,6 +26,7 @@ Then run `dotnet run` within the `Catalog API` folder
 
 ### Get /api/items
 
+- General: Retrieve all items.
 - Example:
   ````
   curl -X GET http://localhost:5002/api/Items \
@@ -52,8 +53,9 @@ Then run `dotnet run` within the `Catalog API` folder
   ]
   ```
 
-GET api/items/{id}
+### GET api/items/{id}
 
+- General: Retrieve the specified item.
 - Example:
   ```
   curl -X GET http://localhost:5002/api/Items/52d528b9-cce8-4427-a3f6-6e22b1a7869f \
@@ -68,8 +70,9 @@ GET api/items/{id}
   }
   ```
 
-POST api/items
+### POST api/items
 
+- General: Create a new item.
 - Example:
 
   ```
@@ -78,8 +81,8 @@ POST api/items
   -H 'accept: text/plain' \
   -H 'Content-Type: application/json' \
   -d '{
-  "name": Gloves,
-  "price": 20
+    "name": Gloves,
+    "price": 20
   }'
   ```
 
@@ -93,8 +96,9 @@ POST api/items
     }
   ```
 
-PUT api/items/{id}
+### PUT api/items/{id}
 
+- General: Update the specified item.
 - Example:
 
   ```
@@ -103,15 +107,16 @@ PUT api/items/{id}
   -H 'accept: text/plain' \
   -H 'Content-Type: application/json' \
   -d '{
-  "name": Gloves,
-  "price": 40
+    "name": Gloves,
+    "price": 40
   }'
   ```
 
 - Response: No Content
 
-DELETE api/items/{id}
+### DELETE api/items/{id}
 
+- General: Delete the specified item.
 - Example:
 
   ```
@@ -122,20 +127,27 @@ DELETE api/items/{id}
 
 - Response: No Content
 
-GET /auth
+### POST /register
 
+- General: Register a new user.
 - Example
 
   ```
-  curl -X 'GET' \
-  'http://localhost:5002/auth' \
-  -H 'accept: */*'
+    curl -X 'POST' \
+    'http://localhost:5002/register' \
+    -H 'accept: text/plain' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "email": "Renfri@gmail.com",
+      "password": "Test@1234"
+    }'
   ```
 
 - Response:
+
   ```
   {
-  "success": true,
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQ2F0YWxvZyBVc2VyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZGF0ZW9mYmlydGgiOiI0LzE2LzIwMjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJOb3JtYWwgVXNlciIsIm5iZiI6MTYxODc5NzEwOCwiZXhwIjoxNjE4ODA0MzA4LCJpc3MiOiJDYXRhbG9nIGxvY2FsaG9zdCBBZG1pbiIsImF1ZCI6IkNhdGFsb2cgbG9jYWxob3N0IEFkbWluIn0.EEKGP_3YLAnqBYaB3UAvd0c2bx76VupYjRNlMzfK5Hw"
+    "token": "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJSZW5mcmlAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvc3VybmFtZSI6IlJlbmZyaUBnbWFpbC5jb20iLCJJZCI6IjgwMDc1YmFiLWQ3YjgtNDk4ZC1hNTM3LTc5ZjY3NDZjNDgzZSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3NpZCI6IjhkZTc4MmY1LTgyMDMtNGNmZi1hZmJjLWNlNjg5ODg1ZDUxOCIsIm5iZiI6MTYxOTAzNDUwMywiZXhwIjoxNjE5MDQxNzAzfQ.Dow3BdNQT3y7w7EuY-o9YJalfSw-xs8Bm1Gz-9iuOjk"
   }
+
   ```
