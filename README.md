@@ -147,7 +147,30 @@ Then run `dotnet run` within the `Catalog API` folder
 
   ```
   {
-    "token": "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJSZW5mcmlAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvc3VybmFtZSI6IlJlbmZyaUBnbWFpbC5jb20iLCJJZCI6IjgwMDc1YmFiLWQ3YjgtNDk4ZC1hNTM3LTc5ZjY3NDZjNDgzZSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3NpZCI6IjhkZTc4MmY1LTgyMDMtNGNmZi1hZmJjLWNlNjg5ODg1ZDUxOCIsIm5iZiI6MTYxOTAzNDUwMywiZXhwIjoxNjE5MDQxNzAzfQ.Dow3BdNQT3y7w7EuY-o9YJalfSw-xs8Bm1Gz-9iuOjk"
+    "token": "{JWT Token}"
   }
+  ```
 
+### POST /login
+
+- General: Login with an existing user.
+- Example
+
+  ```
+    curl -X 'POST' \
+    'http://localhost:5002/register' \
+    -H 'accept: text/plain' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "email": "Renfri@gmail.com",
+      "password": "Test@1234"
+    }'
+  ```
+
+- Response:
+
+  ```
+  {
+    "token": "{JWT Token}"
+  }
   ```
