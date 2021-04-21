@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
 using System.Text;
@@ -7,6 +6,7 @@ using System.Text.Json;
 using Catalog_API.Repositories;
 using Catalog_API.Services;
 using Catalog_API.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -45,8 +45,8 @@ namespace Catalog_API
             });
             services.AddIdentityCore<IdentityUser>(options => options.User.RequireUniqueEmail=true)
                     .AddEntityFrameworkStores<UsersDbContext>();
-            services.AddAuthentication("OAuth")
-                    .AddJwtBearer("OAuth", config =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, config =>
                     {
                         var jwtSettings = _config.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
                         config.TokenValidationParameters = new TokenValidationParameters()
