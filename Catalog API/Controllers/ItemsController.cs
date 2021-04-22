@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Catalog_API.Controllers
 {
     [ApiController]
-    [Authorize(JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class ItemsController : ControllerBase
     {
@@ -54,13 +54,14 @@ namespace Catalog_API.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<ItemReadDto>> CreateItem(ItemCreateDto itemDto)
+        public async Task<ActionResult<ItemReadDto>> CreateItem([FromBody] ItemCreateDto itemDto)
         {
             Item item = new Item()
             {
                 Id = Guid.NewGuid(),
                 Name = itemDto.Name,
                 Price = itemDto.Price??0,
+                UserId = HttpContext.GetUserId(),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -72,12 +73,16 @@ namespace Catalog_API.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateItem(Guid id, ItemUpdateDto itemDto)
+        public async Task<IActionResult> UpdateItem([FromRoute] Guid id, [FromBody] ItemUpdateDto itemDto)
         {
             Item item = await _itemRepository.GetItemAsync(id);
             if (item == null)
             {
                 return NotFound();
+            }
+            if (!CheckItemOwner(item))
+            {
+                return BadRequest(new { Errors = "You aren't the owner of this post." });
             }
 
             item.Name = itemDto.Name;
@@ -91,16 +96,25 @@ namespace Catalog_API.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteItem(Guid id)
+        public async Task<IActionResult> DeleteItem([FromRoute] Guid id)
         {
             Item item = await _itemRepository.GetItemAsync(id);
             if (item == null)
             {
                 return NotFound();
             }
+            if (!CheckItemOwner(item))
+            {
+                return BadRequest(new { Errors = "You aren't the owner of this post." });
+            }
 
             await _itemRepository.DeleteItemAsync(id);
             return NoContent();
+        }
+
+        private bool CheckItemOwner(Item item)
+        {
+            return item.UserId == HttpContext.GetUserId();
         }
     }
 }
