@@ -7,6 +7,7 @@ Simple RESTful API to manage items.
 - C#
 - Asp.NetCore 3.1
 - MongoDb
+- Mysql
 - Docker
 
 ## Getting Started
