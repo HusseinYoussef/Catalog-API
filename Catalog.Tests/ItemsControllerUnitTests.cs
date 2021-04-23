@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace Catalog.Tests
 {
-    public class ItemsControllerTests
+    public class ItemsControllerUnitTests
     {
         private readonly Mock<IItemRepository> itemRepositoryStub = new Mock<IItemRepository>();
         private readonly Random rand = new Random();
