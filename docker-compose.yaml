@@ -12,7 +12,7 @@ services:
     volumes:
       - mongo_data:/data/db
     networks:
-      - shared_network
+      - mongo_network
 
   # mongo_express
   mongo_express:
@@ -27,7 +27,37 @@ services:
       - ME_CONFIG_MONGODB_SERVER=mongodb
       - ME_CONFIG_MONGODB_PORT=27017
     networks:
-      - shared_network
+      - mongo_network
+
+  mysqldb:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=Catalog
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - mysql_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - mysqldb
+    ports:
+      - 8081:80
+    environment:
+      - PMA_HOST=mysqldb
+      - PMA_PORT=3306
+      - PMA_USER=admin
+      - PMA_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password
+    networks:
+      - mysql_network
 
   api:
     build:
@@ -35,6 +65,7 @@ services:
       dockerfile: "Catalog API/Dockerfile"
     depends_on:
       - mongodb
+      - mysqldb
     ports:
       - 5000:80
     environment:
@@ -42,11 +73,17 @@ services:
       - MongoDbSettings:Host=mongodb
       - MongoDbSettings:Username=admin
       - MongoDbSettings:Password=password
+      - MysqlDbSettings:Host=mysqldb
+      - MysqlDbSettings:Username=admin
+      - MysqlDbSettings:Password=password
       - JwtSettings:Key=This_Is_My_Secret_Jwt_Key
     networks:
-      - shared_network
+      - mongo_network
+      - mysql_network
 
 volumes:
   mongo_data:
+  mysql_data:
 networks:
-  shared_network:
+  mongo_network:
+  mysql_network:
