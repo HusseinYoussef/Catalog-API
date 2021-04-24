@@ -59,21 +59,21 @@ Apply the migrations in `migrations` folder to set up the Mysql database by runn
 - Response:
   ```
   [
-  {
-      "id": "52d528b9-cce8-4427-a3f6-6e22b1a7869f",
-      "name": "dress",
-      "price": 100
-  },
-  {
-      "id": "8632007c-dd91-4fa1-b9e9-a7a0f7efcc18",
-      "name": "pants",
-      "price": 40
-  },
-  {
-      "id": "b77e5b52-1dac-4913-9e97-8e450f03fe4b",
-      "name": "jacket",
-      "price": 178
-  }
+      {
+          "id": "52d528b9-cce8-4427-a3f6-6e22b1a7869f",
+          "name": "dress",
+          "price": 100
+      },
+      {
+          "id": "8632007c-dd91-4fa1-b9e9-a7a0f7efcc18",
+          "name": "pants",
+          "price": 40
+      },
+      {
+          "id": "b77e5b52-1dac-4913-9e97-8e450f03fe4b",
+          "name": "jacket",
+          "price": 178
+      }
   ]
   ```
 
@@ -88,9 +88,9 @@ Apply the migrations in `migrations` folder to set up the Mysql database by runn
 - Response:
   ```
   {
-  "id": "52d528b9-cce8-4427-a3f6-6e22b1a7869f",
-  "name": "dress",
-  "price": 100
+      "id": "52d528b9-cce8-4427-a3f6-6e22b1a7869f",
+      "name": "dress",
+      "price": 100
   }
   ```
 
