@@ -1,13 +1,17 @@
 # Catalog API
 
-Simple RESTful API to manage items.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
+
+Simple RESTful API performing CRUD operations to manage items. The API is secured using JWT authorization.
 
 ## Tech Stack
 
 - C#
 - Asp.NetCore 3.1
-- MongoDb
-- Mysql
+- EntityFramework
+- MongoDB
+- MySQL
 - Docker
 
 ## Getting Started
@@ -16,13 +20,31 @@ To get things up and running fast, you can go with the dockerizeed approach, run
 
 `docker-compose up`
 
-To run locally, make sure have the following installed:
+To run locally, make sure you have the following installed:
 
 - Asp.NetCore 3.1+ SDK
 - Mongo database
 - Mysql
 
-Then run `dotnet run` within the `Catalog API` folder
+Then run `dotnet run` within the `Catalog API` folder after setting up the below configurations.
+
+## Environment Variables
+
+Make sure you set these configurations either by using environment variables or the user-secrets manager tool
+
+- MongoDbSettings:Host
+- MongoDbSettings:Username
+- MongoDbSettings:Password
+- MysqlDbSettings:Host
+- MysqlDbSettings:Username
+- MysqlDbSettings:Password
+- JwtSettings:Key
+
+## Setting Up Database
+
+Apply the migrations in `migrations` folder to set up the Mysql database by running:
+
+`dotnet ef database update`
 
 ## API Reference
 
