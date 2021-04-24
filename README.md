@@ -20,6 +20,7 @@ To run locally, make sure have the following installed:
 
 - Asp.NetCore 3.1+ SDK
 - Mongo database
+- Mysql
 
 Then run `dotnet run` within the `Catalog API` folder
 
