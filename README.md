@@ -23,8 +23,8 @@ To get things up and running fast, you can go with the dockerizeed approach, run
 To run locally, make sure you have the following installed:
 
 - Asp.NetCore 3.1+ SDK
-- Mongo database
-- Mysql
+- MongoDB
+- MySQL
 
 Then run `dotnet run` within the `Catalog API` folder after setting up the below configurations.
 
