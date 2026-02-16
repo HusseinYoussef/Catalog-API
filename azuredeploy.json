@@ -5,18 +5,42 @@
     "_generator": {
       "name": "bicep",
       "version": "0.40.2.10011",
-      "templateHash": "18071999039742700591"
-    }
+      "templateHash": "16932092944080975125"
+    },
+    "name": "Clarity AI Visibility - Front Door Log Forwarder",
+    "description": "Deploy Azure Front Door Log Forwarder to send AFD access logs to Clarity for AI Visibility bot detection."
   },
   "parameters": {
     "location": {
       "type": "string",
-      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": [
+        "australiaeast",
+        "brazilsouth",
+        "canadacentral",
+        "centralus",
+        "eastasia",
+        "eastus",
+        "eastus2",
+        "francecentral",
+        "germanywestcentral",
+        "japaneast",
+        "koreacentral",
+        "northcentralus",
+        "northeurope",
+        "southcentralus",
+        "southeastasia",
+        "swedencentral",
+        "uksouth",
+        "westeurope",
+        "westus",
+        "westus2",
+        "westus3"
+      ],
       "metadata": {
-        "description": "Location for the resources."
+        "description": "Location for the resources. Must be a region that supports Azure Container Apps."
       }
     },
-    "afdResourceName": {
+    "frontDoorName": {
       "type": "string",
       "minLength": 1,
       "maxLength": 260,
@@ -24,46 +48,23 @@
         "description": "Name of the existing Azure Front Door resource to forward logs from."
       }
     },
-    "namePrefix": {
+    "projectId": {
       "type": "string",
-      "defaultValue": "afdlogs",
-      "minLength": 1,
-      "maxLength": 11,
-      "metadata": {
-        "description": "Resource name prefix for all created resources."
-      }
-    },
-    "targetHttpEndpoint": {
-      "type": "string",
-      "defaultValue": "https://app-clarity-server-request-ingest-dev-eus2.azurewebsites.net/collect/frontdoor/test",
       "minLength": 1,
       "metadata": {
-        "description": "Target HTTP endpoint to forward AFD logs to."
-      }
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": {
-        "Product": "Clarity",
-        "Feature": "AI Visibility"
-      },
-      "metadata": {
-        "description": "Tags to apply to all resources."
+        "description": "Your Clarity project ID."
       }
     }
   },
   "variables": {
-    "uniqueSuffix": "[uniqueString(resourceGroup().id)]",
-    "resourceNamePrefix": "[format('{0}{1}', parameters('namePrefix'), variables('uniqueSuffix'))]",
-    "storageAccountName": "[take(variables('resourceNamePrefix'), 24)]"
+    "namePrefix": "clarityaivisibility"
   },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2023-01-01",
-      "name": "[variables('storageAccountName')]",
+      "name": "[format('{0}sa', variables('namePrefix'))]",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
       "sku": {
         "name": "Standard_LRS"
       },
@@ -72,25 +73,24 @@
     {
       "type": "Microsoft.Storage/storageAccounts/blobServices",
       "apiVersion": "2023-01-01",
-      "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+      "name": "[format('{0}/{1}', format('{0}sa', variables('namePrefix')), 'default')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts', format('{0}sa', variables('namePrefix')))]"
       ]
     },
     {
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
       "apiVersion": "2023-01-01",
-      "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', 'azure-webjobs-eventhub')]",
+      "name": "[format('{0}/{1}/{2}', format('{0}sa', variables('namePrefix')), 'default', 'azure-webjobs-eventhub')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', format('{0}sa', variables('namePrefix')), 'default')]"
       ]
     },
     {
       "type": "Microsoft.EventHub/namespaces",
       "apiVersion": "2023-01-01-preview",
-      "name": "[format('{0}-ehns', variables('resourceNamePrefix'))]",
+      "name": "[format('{0}-ehns', variables('namePrefix'))]",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
       "sku": {
         "name": "Standard",
         "tier": "Standard",
@@ -100,49 +100,47 @@
     {
       "type": "Microsoft.EventHub/namespaces/eventhubs",
       "apiVersion": "2023-01-01-preview",
-      "name": "[format('{0}/{1}', format('{0}-ehns', variables('resourceNamePrefix')), 'afd-logs')]",
+      "name": "[format('{0}/{1}', format('{0}-ehns', variables('namePrefix')), 'afd-logs')]",
       "properties": {
         "partitionCount": 2,
         "messageRetentionInDays": 1
       },
       "dependsOn": [
-        "[resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('resourceNamePrefix')))]"
+        "[resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('namePrefix')))]"
       ]
     },
     {
       "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
       "apiVersion": "2023-01-01-preview",
-      "name": "[format('{0}/{1}/{2}', format('{0}-ehns', variables('resourceNamePrefix')), 'afd-logs', 'afd-forwarder')]",
+      "name": "[format('{0}/{1}/{2}', format('{0}-ehns', variables('namePrefix')), 'afd-logs', 'afd-forwarder')]",
       "dependsOn": [
-        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('{0}-ehns', variables('resourceNamePrefix')), 'afd-logs')]"
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('{0}-ehns', variables('namePrefix')), 'afd-logs')]"
       ]
     },
     {
       "type": "Microsoft.App/managedEnvironments",
       "apiVersion": "2023-05-01",
-      "name": "[format('{0}-env', variables('resourceNamePrefix'))]",
+      "name": "[format('{0}-env', variables('namePrefix'))]",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
       "properties": {}
     },
     {
       "type": "Microsoft.App/containerApps",
       "apiVersion": "2023-05-01",
-      "name": "[format('{0}-func', variables('resourceNamePrefix'))]",
+      "name": "[format('{0}-func', variables('namePrefix'))]",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
       "properties": {
-        "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('{0}-env', variables('resourceNamePrefix')))]",
+        "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('{0}-env', variables('namePrefix')))]",
         "configuration": {
           "activeRevisionsMode": "Single",
           "secrets": [
             {
               "name": "storage-connection",
-              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix=core.windows.net', variables('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-01-01').keys[0].value)]"
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix=core.windows.net', format('{0}sa', variables('namePrefix')), listKeys(resourceId('Microsoft.Storage/storageAccounts', format('{0}sa', variables('namePrefix'))), '2023-01-01').keys[0].value)]"
             },
             {
               "name": "eventhub-connection",
-              "value": "[listKeys(format('{0}/authorizationRules/RootManageSharedAccessKey', resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('resourceNamePrefix')))), '2023-01-01-preview').primaryConnectionString]"
+              "value": "[listKeys(format('{0}/authorizationRules/RootManageSharedAccessKey', resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('namePrefix')))), '2023-01-01-preview').primaryConnectionString]"
             }
           ]
         },
@@ -182,7 +180,7 @@
                 },
                 {
                   "name": "TARGET_HTTP_ENDPOINT",
-                  "value": "[parameters('targetHttpEndpoint')]"
+                  "value": "[format('https://app-clarity-server-request-ingest-dev-eus2.azurewebsites.net/collect/frontdoor/{0}', parameters('projectId'))]"
                 }
               ]
             }
@@ -218,20 +216,20 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.EventHub/namespaces/eventhubs/consumergroups', format('{0}-ehns', variables('resourceNamePrefix')), 'afd-logs', 'afd-forwarder')]",
-        "[resourceId('Microsoft.App/managedEnvironments', format('{0}-env', variables('resourceNamePrefix')))]",
-        "[resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('resourceNamePrefix')))]",
-        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('{0}-ehns', variables('resourceNamePrefix')), 'afd-logs')]",
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs/consumergroups', format('{0}-ehns', variables('namePrefix')), 'afd-logs', 'afd-forwarder')]",
+        "[resourceId('Microsoft.App/managedEnvironments', format('{0}-env', variables('namePrefix')))]",
+        "[resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('namePrefix')))]",
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('{0}-ehns', variables('namePrefix')), 'afd-logs')]",
+        "[resourceId('Microsoft.Storage/storageAccounts', format('{0}sa', variables('namePrefix')))]"
       ]
     },
     {
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
-      "scope": "[resourceId('Microsoft.Cdn/profiles', parameters('afdResourceName'))]",
+      "scope": "[resourceId('Microsoft.Cdn/profiles', parameters('frontDoorName'))]",
       "name": "forward-to-eventhub",
       "properties": {
-        "eventHubAuthorizationRuleId": "[format('{0}/authorizationRules/RootManageSharedAccessKey', resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('resourceNamePrefix'))))]",
+        "eventHubAuthorizationRuleId": "[format('{0}/authorizationRules/RootManageSharedAccessKey', resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('namePrefix'))))]",
         "eventHubName": "afd-logs",
         "logs": [
           {
@@ -250,8 +248,8 @@
         "metrics": []
       },
       "dependsOn": [
-        "[resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('resourceNamePrefix')))]",
-        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('{0}-ehns', variables('resourceNamePrefix')), 'afd-logs')]"
+        "[resourceId('Microsoft.EventHub/namespaces', format('{0}-ehns', variables('namePrefix')))]",
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('{0}-ehns', variables('namePrefix')), 'afd-logs')]"
       ]
     }
   ],
@@ -261,14 +259,14 @@
       "metadata": {
         "description": "Storage account name"
       },
-      "value": "[variables('storageAccountName')]"
+      "value": "[format('{0}sa', variables('namePrefix'))]"
     },
     "eventHubNamespaceName": {
       "type": "string",
       "metadata": {
         "description": "Event Hub Namespace name"
       },
-      "value": "[format('{0}-ehns', variables('resourceNamePrefix'))]"
+      "value": "[format('{0}-ehns', variables('namePrefix'))]"
     },
     "eventHubName": {
       "type": "string",
@@ -282,14 +280,14 @@
       "metadata": {
         "description": "Container App name"
       },
-      "value": "[format('{0}-func', variables('resourceNamePrefix'))]"
+      "value": "[format('{0}-func', variables('namePrefix'))]"
     },
     "containerAppEnvName": {
       "type": "string",
       "metadata": {
         "description": "Container Apps Environment name"
       },
-      "value": "[format('{0}-env', variables('resourceNamePrefix'))]"
+      "value": "[format('{0}-env', variables('namePrefix'))]"
     },
     "diagnosticSettingName": {
       "type": "string",
