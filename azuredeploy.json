@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.40.2.10011",
-      "templateHash": "16932092944080975125"
+      "templateHash": "14682080437479641777"
     },
     "name": "Clarity AI Visibility - Front Door Log Forwarder",
     "description": "Deploy Azure Front Door Log Forwarder to send AFD access logs to Clarity for AI Visibility bot detection."
@@ -118,11 +118,34 @@
       ]
     },
     {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2022-10-01",
+      "name": "[format('{0}-logs', variables('namePrefix'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        },
+        "retentionInDays": 30
+      }
+    },
+    {
       "type": "Microsoft.App/managedEnvironments",
       "apiVersion": "2023-05-01",
       "name": "[format('{0}-env', variables('namePrefix'))]",
       "location": "[parameters('location')]",
-      "properties": {}
+      "properties": {
+        "appLogsConfiguration": {
+          "destination": "log-analytics",
+          "logAnalyticsConfiguration": {
+            "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', format('{0}-logs', variables('namePrefix'))), '2022-10-01').customerId]",
+            "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', format('{0}-logs', variables('namePrefix'))), '2022-10-01').primarySharedKey]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', format('{0}-logs', variables('namePrefix')))]"
+      ]
     },
     {
       "type": "Microsoft.App/containerApps",
@@ -288,6 +311,13 @@
         "description": "Container Apps Environment name"
       },
       "value": "[format('{0}-env', variables('namePrefix'))]"
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Log Analytics workspace name"
+      },
+      "value": "[format('{0}-logs', variables('namePrefix'))]"
     },
     "diagnosticSettingName": {
       "type": "string",
