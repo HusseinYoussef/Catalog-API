@@ -45,59 +45,45 @@
         }
       }
     },
-    "basics": [],
-    "steps": [
+    "basics": [
       {
-        "name": "settings",
-        "label": "Settings",
-        "elements": [
-          {
-            "name": "skuWarning",
-            "type": "Microsoft.Common.InfoBox",
-            "options": {
-              "text": "Only Azure Front Door Standard or Premium profiles are supported. Classic Azure CDN profiles will cause deployment to fail.",
-              "style": "Warning"
-            }
-          },
-          {
-            "name": "frontDoorSelector",
-            "type": "Microsoft.Solutions.ResourceSelector",
-            "label": "Azure Front Door Name",
-            "toolTip": "Select the Azure Front Door profile whose access logs you want to forward to Clarity.",
-            "resourceType": "Microsoft.Cdn/profiles",
-            "constraints": {
-              "required": true
-            },
-            "options": {
-              "filter": {
-                "subscription": "onBasics",
-                "location": "all"
-              }
-            }
-          },
-          {
-            "name": "projectId",
-            "type": "Microsoft.Common.TextBox",
-            "label": "Clarity Project ID",
-            "toolTip": "Your Clarity project ID where bot detection data will be sent.",
-            "placeholder": "abc123xyz",
-            "constraints": {
-              "required": true,
-              "validations": [
-                {
-                  "regex": "^.+$",
-                  "message": "Project ID is required."
-                }
-              ]
-            }
+        "name": "frontDoorSelector",
+        "type": "Microsoft.Solutions.ResourceSelector",
+        "label": "Azure Front Door Name",
+        "toolTip": "Select the Azure Front Door profile whose access logs you want to forward to Clarity.",
+        "resourceType": "Microsoft.Cdn/profiles",
+        "constraints": {
+          "required": true
+        },
+        "options": {
+          "filter": {
+            "subscription": "onBasics",
+            "location": "all"
           }
-        ]
+        }
+      },
+      {
+        "name": "projectId",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Clarity Project ID",
+        "toolTip": "Your Clarity project ID where bot detection data will be sent.",
+        "placeholder": "abc123xyz",
+        "constraints": {
+          "required": true,
+          "validations": [
+            {
+              "regex": "^.+$",
+              "message": "Project ID is required."
+            }
+          ]
+        }
       }
     ],
+    "steps": [],
     "outputs": {
       "location": "[location()]",
-      "frontDoorName": "[steps('settings').frontDoorSelector.name]",
-      "projectId": "[steps('settings').projectId]"
+      "frontDoorName": "[basics('frontDoorSelector').name]",
+      "projectId": "[basics('projectId')]"
     }
   }
 }
