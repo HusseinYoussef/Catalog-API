@@ -62,7 +62,7 @@
           {
             "name": "frontDoorSelector",
             "type": "Microsoft.Solutions.ResourceSelector",
-            "label": "Azure Front Door Profile",
+            "label": "Azure Front Door Name",
             "toolTip": "Select the Azure Front Door profile whose access logs you want to forward to Clarity.",
             "resourceType": "Microsoft.Cdn/profiles",
             "constraints": {
