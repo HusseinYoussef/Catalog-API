@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.40.2.10011",
-      "templateHash": "16932092944080975125"
+      "templateHash": "14740268583630002692"
     },
     "name": "Clarity AI Visibility - Front Door Log Forwarder",
     "description": "Deploy Azure Front Door Log Forwarder to send AFD access logs to Clarity for AI Visibility bot detection."
@@ -180,7 +180,7 @@
                 },
                 {
                   "name": "TARGET_HTTP_ENDPOINT",
-                  "value": "[format('https://app-clarity-server-request-ingest-dev-eus2.azurewebsites.net/collect/frontdoor/{0}', parameters('projectId'))]"
+                  "value": "[format('https://app-clarity-server-request-ingest-eus2.azurewebsites.net/collect/frontdoor/{0}', parameters('projectId'))]"
                 }
               ]
             }
@@ -195,8 +195,8 @@
                   "type": "cron",
                   "metadata": {
                     "timezone": "UTC",
-                    "start": "15 * * * *",
-                    "end": "0 * * * *",
+                    "start": "15 */12 * * *",
+                    "end": "0 */12 * * *",
                     "desiredReplicas": "2"
                   }
                 }
