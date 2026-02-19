@@ -1,164 +1,88 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
-  "view": {
-    "kind": "Form",
-    "properties": {
-      "title": "Clarity AI Visibility - Front Door Log Forwarder",
-      "steps": [
-        {
-          "name": "basics",
-          "label": "Basics",
-          "elements": [
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "config": {
+      "isWizard": false,
+      "basics": {
+        "description": "Deploy Azure Front Door Log Forwarder to send AFD access logs to Clarity for AI Visibility bot detection.",
+        "subscription": {
+          "constraints": {
+            "validations": []
+          }
+        },
+        "resourceGroup": {
+          "allowExisting": true
+        },
+        "location": {
+          "label": "Region",
+          "toolTip": "Select a region that supports Azure Container Apps.",
+          "allowedValues": [
+            "australiaeast",
+            "brazilsouth",
+            "canadacentral",
+            "centralus",
+            "eastasia",
+            "eastus",
+            "eastus2",
+            "francecentral",
+            "germanywestcentral",
+            "japaneast",
+            "koreacentral",
+            "northcentralus",
+            "northeurope",
+            "southcentralus",
+            "southeastasia",
+            "swedencentral",
+            "uksouth",
+            "westeurope",
+            "westus",
+            "westus2",
+            "westus3"
+          ],
+          "visible": true
+        }
+      }
+    },
+    "basics": [
+      {
+        "name": "frontDoorSelector",
+        "type": "Microsoft.Solutions.ResourceSelector",
+        "label": "Azure Front Door Name",
+        "toolTip": "Select the Azure Front Door profile whose access logs you want to forward to Clarity.",
+        "resourceType": "Microsoft.Cdn/profiles",
+        "constraints": {
+          "required": true
+        },
+        "options": {
+          "filter": {
+            "subscription": "onBasics",
+            "location": "all"
+          }
+        }
+      },
+      {
+        "name": "projectId",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Clarity Project ID",
+        "toolTip": "Your Clarity project ID where bot detection data will be sent.",
+        "constraints": {
+          "required": true,
+          "validations": [
             {
-              "name": "subscription",
-              "type": "Microsoft.Common.SubscriptionSelector",
-              "visible": true
-            },
-            {
-              "name": "resourceGroup",
-              "type": "Microsoft.Common.ResourceGroupSelector",
-              "scope": {
-                "subscriptionId": "[steps('basics').subscription.subscriptionId]"
-              },
-              "allowedMode": "Both",
-              "visible": true
-            },
-            {
-              "name": "region",
-              "type": "Microsoft.Common.DropDown",
-              "label": "Region",
-              "toolTip": "Select a region that supports Azure Container Apps.",
-              "defaultValue": {
-                "value": "eastus2"
-              },
-              "constraints": {
-                "required": true,
-                "allowedValues": [
-                  {
-                    "label": "Australia East",
-                    "value": "australiaeast"
-                  },
-                  {
-                    "label": "Brazil South",
-                    "value": "brazilsouth"
-                  },
-                  {
-                    "label": "Canada Central",
-                    "value": "canadacentral"
-                  },
-                  {
-                    "label": "Central US",
-                    "value": "centralus"
-                  },
-                  {
-                    "label": "East Asia",
-                    "value": "eastasia"
-                  },
-                  {
-                    "label": "East US",
-                    "value": "eastus"
-                  },
-                  {
-                    "label": "East US 2",
-                    "value": "eastus2"
-                  },
-                  {
-                    "label": "France Central",
-                    "value": "francecentral"
-                  },
-                  {
-                    "label": "Germany West Central",
-                    "value": "germanywestcentral"
-                  },
-                  {
-                    "label": "Japan East",
-                    "value": "japaneast"
-                  },
-                  {
-                    "label": "Korea Central",
-                    "value": "koreacentral"
-                  },
-                  {
-                    "label": "North Central US",
-                    "value": "northcentralus"
-                  },
-                  {
-                    "label": "North Europe",
-                    "value": "northeurope"
-                  },
-                  {
-                    "label": "South Central US",
-                    "value": "southcentralus"
-                  },
-                  {
-                    "label": "Southeast Asia",
-                    "value": "southeastasia"
-                  },
-                  {
-                    "label": "Sweden Central",
-                    "value": "swedencentral"
-                  },
-                  {
-                    "label": "UK South",
-                    "value": "uksouth"
-                  },
-                  {
-                    "label": "West Europe",
-                    "value": "westeurope"
-                  },
-                  {
-                    "label": "West US",
-                    "value": "westus"
-                  },
-                  {
-                    "label": "West US 2",
-                    "value": "westus2"
-                  },
-                  {
-                    "label": "West US 3",
-                    "value": "westus3"
-                  }
-                ]
-              },
-              "visible": true
-            },
-            {
-              "name": "frontDoorSelector",
-              "type": "Microsoft.Solutions.ResourceSelector",
-              "label": "Azure Front Door Name",
-              "toolTip": "Select the Azure Front Door profile whose access logs you want to forward to Clarity.",
-              "resourceType": "Microsoft.Cdn/profiles",
-              "constraints": {
-                "required": true
-              },
-              "scope": {
-                "subscriptionId": "[steps('basics').subscription.subscriptionId]"
-              },
-              "visible": true
-            },
-            {
-              "name": "projectId",
-              "type": "Microsoft.Common.TextBox",
-              "label": "Clarity Project ID",
-              "defaultValue": "",
-              "toolTip": "Your Clarity project ID where bot detection data will be sent.",
-              "constraints": {
-                "required": true,
-                "regex": "^.+$",
-                "validationMessage": "Project ID is required."
-              },
-              "visible": true
+              "regex": "^.+$",
+              "message": "Project ID is required."
             }
           ]
         }
-      ]
-    },
-    "outputs": {
-      "parameters": {
-        "location": "[steps('basics').region]",
-        "frontDoorName": "[steps('basics').frontDoorSelector.name]",
-        "projectId": "[steps('basics').projectId]"
       }
+    ],
+    "steps": [],
+    "outputs": {
+      "location": "[location()]",
+      "frontDoorName": "[basics('frontDoorSelector').name]",
+      "projectId": "[basics('projectId')]"
     }
   }
 }

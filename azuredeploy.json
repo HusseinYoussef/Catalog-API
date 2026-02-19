@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.40.2.10011",
-      "templateHash": "7802809427925328548"
+      "templateHash": "11285664061583005704"
     },
     "name": "Clarity AI Visibility - Front Door Log Forwarder",
     "description": "Deploy Azure Front Door Log Forwarder to send AFD access logs to Clarity for AI Visibility bot detection."
@@ -13,7 +13,29 @@
   "parameters": {
     "location": {
       "type": "string",
-      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": [
+        "australiaeast",
+        "brazilsouth",
+        "canadacentral",
+        "centralus",
+        "eastasia",
+        "eastus",
+        "eastus2",
+        "francecentral",
+        "germanywestcentral",
+        "japaneast",
+        "koreacentral",
+        "northcentralus",
+        "northeurope",
+        "southcentralus",
+        "southeastasia",
+        "swedencentral",
+        "uksouth",
+        "westeurope",
+        "westus",
+        "westus2",
+        "westus3"
+      ],
       "metadata": {
         "description": "Location for the resources. Must be a region that supports Azure Container Apps."
       }
@@ -126,7 +148,7 @@
           "containers": [
             {
               "name": "function",
-              "image": "ghcr.io/husseinyoussef/afd-log-forwarder:1.2",
+              "image": "ghcr.io/microsoft/afd-log-forwarder:1.0",
               "resources": {
                 "cpu": "[json('0.5')]",
                 "memory": "1Gi"
